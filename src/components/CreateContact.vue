@@ -16,7 +16,7 @@
 
                         <input type="text" v-model="image" placeholder="Image" class="border-gray-200 border-2 rounded h-8 w-3/5">
                         <!-- <label class="border-gray-200 border-2 rounded w-fit px-10 cursor-pointer">
-                            <input type="file" v-model="image" placeholder="image" class="hidden"/> Add File
+                            <input type="file" placeholder="image" class="hidden"/> Add File
                         </label> -->
                     </div>
                     <div class="flex flex-col pb-7 gap-1">
@@ -31,6 +31,26 @@
 </template>
 
 <script>
+// import { createUser } from '@/firebase'
+// import { reactive } from 'vue'
+// export default {
+//     name: 'CreateContact',
+//     setup() {
+//         const form = reactive({ name: '', image: '', date:'' })
+
+//         const onSubmit = async () => {
+//             await createUser({ ...form })
+//             form.name = ''
+//             form.image = ''
+//             form.date = ''
+//         }
+//         return { form, onSubmit }
+//     }
+// }
+
+// import firebase from "@/firebase";
+// const db = firebase.firestore();
+
 export default {
     name: 'CreateContact',
     data() {

@@ -18,51 +18,75 @@
                         <!-- <label class="border-gray-200 border-2 rounded w-fit px-10 cursor-pointer">
                             <input type="file" placeholder="image" class="hidden"/> Add File
                         </label> -->
+                        <!-- <input type="file" @image-added="imageHandler"> -->
                     </div>
+
+                            <!-- <div class="upload-file">
+          <label for="blog-photo">Upload Cover Photo</label>
+          <input type="file" ref="blogPhoto" id="blog-photo" @change="fileChange" accept=".png, .jpg, ,jpeg" />
+        </div> -->
+
+
                     <div class="flex flex-col pb-7 gap-1">
                         <label>Last Contact Date</label>
                         <input type="date" v-model="date" placeholder="Date" class="border-gray-200 border-2 rounded h-8 w-3/5">
                     </div>
-                    <!-- change this to button type -->
-                    <input type="submit" value="Save Task" class="bg-blue-500 w-fit text-sm text-white py-2 px-5 rounded-lg cursor-pointer">
+                    <!-- <Button 
+                    @btn-click="createContact" 
+                    text='Add Contact'/> -->
+                    <input type="submit" value="Add Contact" class="bg-blue-500 w-fit text-sm text-white py-2 px-5 rounded-lg cursor-pointer">
                 </form>                    
             </div>
         </div>
 </template>
 
 <script>
-// import { createUser } from '@/firebase'
-// import { reactive } from 'vue'
-// export default {
-//     name: 'CreateContact',
-//     setup() {
-//         const form = reactive({ name: '', image: '', date:'' })
+import firebase from "firebase/app";
+import "firebase/storage"; 
+import { getStorage, ref } from "firebase/storage";
 
-//         const onSubmit = async () => {
-//             await createUser({ ...form })
-//             form.name = ''
-//             form.image = ''
-//             form.date = ''
-//         }
-//         return { form, onSubmit }
-//     }
-// }
-
-// import firebase from "@/firebase";
-// const db = firebase.firestore();
+import db from "../firebase";
+import Button from './Button'
 
 export default {
     name: 'CreateContact',
+    components: {
+        Button
+    },
     data() {
         return {
             name: '',
             image: '',
-            date: ''
+            date: '',
+            file: null
         }
     },
     methods: {
+        // imageHandler(file, Editor, cursorLocation, resetUploader) {
+        //     const storageRef = getStorage();
+        //     const docRef = storageRef.child(`images/${file.name}`);
+        //     docRef.put(file).on(
+        //     "state_changed",
+        //     (snapshot) => {
+        //     console.log(snapshot);
+        //     },
+        //     (err) => {
+        //     console.log(err);
+        //     },
+        //     async () => {
+        //         const downloadURL = await docRef.getDownloadURL();
+        //         Editor.insertEmbed(cursorLocation, "image", downloadURL);
+        //         resetUploader();
+        //     }
+        //     );
+        // },
         onSubmit(e) {
             e.preventDefault()
+            // const storage = getStorage(firebaseApp);
+          
+            // const storageRef = getStorage();
+            // const docRef = storageRef.child(`images/asdf`);
+            // const downloadURL = docRef.getDownloadURL();
 
             if (!this.name) {
                 alert('Please add a name')
@@ -72,17 +96,19 @@ export default {
                 alert('Please add a date')
                 return
             }
-
-            const newContact = {
-                id: Math.floor(Math.random() * 10000),
+            db.collection("contacts").add({
                 name: this.name,
-                date: this.date,
-                image: this.image
-            }
+                image: this.image,
+                date: this.date
+            })
+            .then((docRef) => {
+                console.log("Document written with ID: ", docRef.id);
+            })
+            .catch((error) => {
+                console.error("Error adding document: ", error);
+            });
 
-            this.$emit('add-contact', newContact)
-
-            console.log(newContact)
+            this.$emit('add-contact')
 
             this.name = ''
             this.date = ''

@@ -28,7 +28,7 @@
                         <input type="date" v-model="contact.date" placeholder="Date" class="border-gray-200 border-2 rounded h-8 w-3/5">
                     </div>
                     <!-- change this to button type -->
-                    <input type="submit" value="Save Task" class="bg-blue-500 w-fit text-sm text-white py-2 px-5 rounded-lg cursor-pointer">
+                    <input type="submit" value="Update Contact" class="bg-blue-500 w-fit text-sm text-white py-2 px-5 rounded-lg cursor-pointer">
                 </form>                    
             </div>
         </div>

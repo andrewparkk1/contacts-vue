@@ -1,7 +1,7 @@
 <template>
   <div class="py-14 px-28">
 
-      <!-- <button @click="console">asdf</button> -->
+      <button @click="console">asdf</button>
 
         <Header 
         @toggle-add-contact="toggleAddContact"
@@ -38,6 +38,9 @@ import firebase from "firebase/app";
 import "firebase/storage"; 
 import db from "../firebase";
 
+
+
+
 export default {
   name: 'App',
   props: {
@@ -54,13 +57,18 @@ export default {
   data() {
     return {
       contacts: [],
-      contactIds: [],
+      // contactIds: [],
       showCreateContact: false,
       showViewContact: false,
       specificContact: {}
     }
   },
   methods: {
+    console() {
+      const d = new Date();
+let time = d.getTime();
+      console.log(new Date().getTime());
+    },
     close() {
       this.showCreateContact = false;
       this.showViewContact = false
@@ -100,12 +108,12 @@ export default {
   async created() {
       const snapshot = await db.collection('contacts').get();
       this.contacts = snapshot.docs.map(doc => doc.data())
-      this.contactIds = snapshot.docs.map(doc => doc.id)
-      let i = 0;
-      this.contacts.map(n => {
-        n['id'] = this.contactIds[i];
-        i++;
-      })
+      // this.contactIds = snapshot.docs.map(doc => doc.id)
+      // let i = 0;
+      // this.contacts.map(n => {
+      //   n['id'] = this.contactIds[i];
+      //   i++;
+      // })
   }
 }
 </script>

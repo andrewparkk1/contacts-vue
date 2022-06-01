@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import "firebase/storage";
 
 var firebaseConfig = {
@@ -13,15 +13,13 @@ var firebaseConfig = {
     measurementId: "G-5LD1SQMCSX"
 };
 
+
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
-// const storage = getStorage(firebaseApp);
+// const storage = getStorage();
 // var storage = firebase.storage();
-
-
-// const timestamp = firebase.firestore.FieldValue.serverTimestamp;
-// export { timestamp };
 export default firebaseApp.firestore();
+export { db };
 
 
 // // import firebase from "./firebase";

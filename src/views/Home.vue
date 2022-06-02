@@ -65,9 +65,18 @@ export default {
   },
   methods: {
     console() {
-      const d = new Date();
-let time = d.getTime();
-      console.log(new Date().getTime());
+ const newContact = {
+                id: 3,
+                name: 3,
+                date: 3,
+                image: 3
+            }
+        if (true) {
+            newContact["name"] = "kk";
+
+        }
+            console.log(newContact);
+            
     },
     close() {
       this.showCreateContact = false;
@@ -85,18 +94,25 @@ let time = d.getTime();
     updateContact(contact) {
         this.showViewContact = false;
         var c = db.collection("contacts").doc(contact['id']);
-        return c.update({
-            name: contact['name'],
-            image: contact['image'],
-            date: contact['date']
-        })
-        .then(() => {
-            console.log("Document successfully updated!");
-        })
-        .catch((error) => {
-            // The document probably doesn't exist.
-            console.error("Error updating document: ", error);
-        });
+        if (contact['image'] == "") {
+          c.update({
+              name: contact['name'],
+              date: contact['date']
+          })       
+        } else {
+          return c.update({
+              name: contact['name'],
+              image: contact['image'],
+              date: contact['date']
+          })
+          .then(() => {
+              console.log("Document successfully updated!");
+          })
+          .catch((error) => {
+              // The document probably doesn't exist.
+              console.error("Error updating document: ", error);
+          });
+        }
     },
     viewContact(contact) {
       this.showViewContact = true

@@ -16,7 +16,7 @@
 
     
                     <img src:previewImage class="uploading-image" />
-                    <input type="file" accept="image/jpeg" @change="uploadImage" id="photo">
+                    <input type="file" accept="image/jpeg" id="photo">
 
 
                         <!-- <input type="text" v-model="image" placeholder="Image" class="border-gray-200 border-2 rounded h-8 w-3/5"> -->
@@ -87,55 +87,8 @@ export default {
         }
     },
     methods: {
-        // imageHandler(file, Editor, cursorLocation, resetUploader) {
-        //     const storageRef = getStorage();
-        //     const docRef = storageRef.child(`images/${file.name}`);
-        //     docRef.put(file).on(
-        //     "state_changed",
-        //     (snapshot) => {
-        //     console.log(snapshot);
-        //     },
-        //     (err) => {
-        //     console.log(err);
-        //     },
-        //     async () => {
-        //         const downloadURL = await docRef.getDownloadURL();
-        //         Editor.insertEmbed(cursorLocation, "image", downloadURL);
-        //         resetUploader();
-        //     }
-        //     );
-        // },
-        uploadImage(e){
-                // const image = e.target.files[0];
-                // console.log(image.name);
-                // this.imageName = image.name;
-                // const reader = new FileReader();
-                // reader.readAsDataURL(image);
-                // reader.onload = e =>{
-                //     this.previewImage = e.target.result;
-                //     console.log(this.previewImage);
-                // };
-            },
-
         onSubmit(e) {
             e.preventDefault()
-            // const storage = getStorage(firebaseApp);
-            // const storageRef = getStorage();
-            // const docRef = storageRef.child(`images/asdf`);
-            // const downloadURL = docRef.getDownloadURL();
-
-            // const storage = getStorage();
-
-            // const image = e.target.files[0];
-            // console.log(image.name);
-            // this.imageName = image.name;
-            // const reader = new FileReader();
-            // reader.readAsDataURL(image);
-            // reader.onload = e =>{
-            //     this.previewImage = e.target.result;
-            //     console.log(this.previewImage);
-            // };
-            
             const photo = document.querySelector("#photo").files[0];
 
             if (!this.name) {

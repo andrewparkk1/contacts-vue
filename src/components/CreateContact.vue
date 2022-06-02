@@ -13,32 +13,15 @@
                     </div>
                     <div class="flex flex-col pb-7 gap-1">
                         <label>Image</label>
-
-    
-                    <img src:previewImage class="uploading-image" />
-                    <input type="file" accept="image/jpeg" id="photo">
-
-
-                        <!-- <input type="text" v-model="image" placeholder="Image" class="border-gray-200 border-2 rounded h-8 w-3/5"> -->
-                        <!-- <label class="border-gray-200 border-2 rounded w-fit px-10 cursor-pointer">
-                            <input type="file" placeholder="image" class="hidden"/> Add File
-                        </label> -->
-                        <!-- <input type="file" @image-added="imageHandler"> -->
+                        <label class="border-gray-200 border-2 rounded w-fit px-10 cursor-pointer">
+                            <input type="file" accept="image/jpeg" id="photo" @change="changeName" placeholder="image" class="hidden"/> Add File
+                        </label>
+                        <p id="fileName-createContact"></p>
                     </div>
-
-                            <!-- <div class="upload-file">
-          <label for="blog-photo">Upload Cover Photo</label>
-          <input type="file" ref="blogPhoto" id="blog-photo" @change="fileChange" accept=".png, .jpg, ,jpeg" />
-        </div> -->
-
-
                     <div class="flex flex-col pb-7 gap-1">
                         <label>Last Contact Date</label>
                         <input type="date" v-model="date" placeholder="Date" class="border-gray-200 border-2 rounded h-8 w-3/5">
                     </div>
-                    <!-- <Button 
-                    @btn-click="createContact" 
-                    text='Add Contact'/> -->
                     <input type="submit" value="Add Contact" class="bg-blue-500 w-fit text-sm text-white py-2 px-5 rounded-lg cursor-pointer">
                 </form>                    
             </div>
@@ -46,15 +29,8 @@
 </template>
 
 <script>
-// import firebase from "firebase/app";
-// import "firebase/storage"; 
-// import { getStorage, ref, uploadBytes } from "firebase/storage";
-// import "@/firebase"
-
-import db from "../firebase";
 import Button from './Button'
-
-
+import db from "../firebase";
 import { initializeApp, firebase } from "firebase/app";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL, uploadBytesResumable } from "firebase/storage";
@@ -70,7 +46,6 @@ var firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
-// const db = getFirestore(firebaseApp);
 const storage = getStorage();
 
 
@@ -87,8 +62,13 @@ export default {
         }
     },
     methods: {
+        changeName() {
+            document.querySelector('#fileName-createContact').textContent = document.querySelector("#photo").files[0].name;
+        },
         onSubmit(e) {
             e.preventDefault()
+            this.$emit('close')
+
             const photo = document.querySelector("#photo").files[0];
 
             if (!this.name) {
@@ -119,28 +99,13 @@ export default {
 
             uploadTask.on('state_changed', 
                 (snapshot) => {
-                    // Observe state change events such as progress, pause, and resume
-                    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
                     const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                     console.log('Upload is ' + progress + '% done');
-                    switch (snapshot.state) {
-                    case 'paused':
-                        console.log('Upload is paused');
-                        break;
-                    case 'running':
-                        console.log('Upload is running');
-                        break;
-                    }
                 }, 
                 (error) => {
-                    // Handle unsuccessful uploads
+                    console.log("Upload error");
                 }, 
                 () => {
-                    // Handle successful uploads on complete
-                    // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-                    // getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    // console.log('File available at', downloadURL);
-                    // });
                     console.log("uplaoded image");
                     getDownloadURL(ref(storage, imageName))
                         .then((url) => {
@@ -174,11 +139,11 @@ export default {
                                     console.error("Error adding document: ", error);
                                 });
 
-                            
-                            this.$emit('add-contact')
                             this.name = ''
                             this.date = ''
                             this.image = ''
+                            document.querySelector('#fileName-createContact').textContent = "";
+
                         })
 
                 }

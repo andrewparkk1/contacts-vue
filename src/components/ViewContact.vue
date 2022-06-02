@@ -15,20 +15,20 @@
                     </div>
                     <div class="flex flex-col pb-7 gap-1">
                         <label>Image</label>
-                        <!-- <img :src="contact.image" alt=""> -->
-                        <input type="file" accept="image/jpeg" id="pho">
+                        <div class="flex items-center gap-3">
 
-                        <!-- <input type="text" v-model="contact.image" placeholder="Image" class="border-gray-200 border-2 rounded h-8 w-3/5"> -->
-                        <!-- <label class="border-gray-200 border-2 rounded w-fit px-10 cursor-pointer">
-                            <input type="file" v-model="image" placeholder="image" class="hidden"/> Add File
-                        </label> -->
+                            <img :src="contact.image" alt="" class="w-14 h-14 object-cover rounded-full">
+                            <label class="border-gray-200 border-2 rounded w-fit px-10 cursor-pointer">
+                                <input type="file" accept="image/jpeg" id="pho" @change="changeName" placeholder="image" class="hidden"/> Add File
+                            </label>
+                            <p id="fileName-viewContact"></p>
+                        </div>
 
                     </div>
                     <div class="flex flex-col pb-7 gap-1">
                         <label>Last Contact Date</label>
                         <input type="date" v-model="contact.date" placeholder="Date" class="border-gray-200 border-2 rounded h-8 w-3/5">
                     </div>
-                    <!-- change this to button type -->
                     <input type="submit" value="Update Contact" class="bg-blue-500 w-fit text-sm text-white py-2 px-5 rounded-lg cursor-pointer">
                 </form>                    
             </div>
@@ -52,7 +52,6 @@ var firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
-// const db = getFirestore(firebaseApp);
 const storage = getStorage();
 
 
@@ -71,23 +70,13 @@ export default {
             date: '',
         }
     },
-    // data() {
-    //     return {
-    //         c : {
-    //             id: '',
-    //             name: '',
-    //             image: '',
-    //             date: ''
-    //         }
-    //     }
-    // },
-    // created() {
-    //     this.c = {id: this.contact.id, name: this.contact.name, image: 'asdf', date: '1222-02-05'}
-    //     console.log(this.contact.name)
-    // },
     methods: {
-        onSubmit(e) {
+        changeName() {
+            document.querySelector('#fileName-viewContact').textContent = document.querySelector("#pho").files[0].name;
+        },
+        async onSubmit(e) {
             e.preventDefault()
+            this.$emit('close')
 
             if (!this.contact.name) {
                 alert('Please add a name')
@@ -105,8 +94,6 @@ export default {
                 image: ""
             }
 
-
-            
             const photo = document.querySelector("#pho").files[0];
 
             if (photo) {
@@ -116,40 +103,88 @@ export default {
                 };
                 const imageName = "images/" + new Date().getTime() + "_" + photo.name;
                 const storageRef = ref(storage, imageName);
-                const uploadTask = uploadBytesResumable(storageRef, photo, metadata);
 
-                uploadTask.on('state_changed', 
-                    (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        console.log('Upload is ' + progress + '% done');
-                        switch (snapshot.state) {
-                        case 'paused':
-                            console.log('Upload is paused');
-                            break;
-                        case 'running':
-                            console.log('Upload is running');
-                            break;
-                        }
-                    }, 
-                    (error) => {
-                        // Handle unsuccessful uploads
-                    }, 
-                    () => {
-                        console.log("uplaoded image");
-                        getDownloadURL(ref(storage, imageName))
-                            .then((url) => {
-                                newContact['image'] = url;
-                                console.log(newContact);
-                                this.$emit('update-contact', newContact)
-                            })
-                    }
-                );
+                async function uploadTaskPromise() {
+                    return new Promise(function(resolve, reject) {
+                        const uploadTask = uploadBytesResumable(storageRef, photo, metadata);
+                        uploadTask.on('state_changed',
+                            function(snapshot) {
+                                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                                console.log('Upload is ' + progress + '% done')
+                            },
+                            function error(err) {
+                                console.log('error', err)
+                                reject()
+                            },
+                            function complete() {
+                                console.log("uplaoded image");
+                                getDownloadURL(ref(storage, imageName))
+                                    .then((url) => {
+                                        newContact['image'] = url;
+                                        console.log(newContact);
+                                        const c = db.collection("contacts").doc(newContact['id']);
+
+                                        c.update({
+                                            name: newContact['name'],
+                                            image: newContact['image'],
+                                            date: newContact['date']
+                                        })
+                                    })
+                            }
+                        )
+                    })
+                }
+
+                uploadTaskPromise();
+
+                // const uploadTask = uploadBytesResumable(storageRef, photo, metadata);
+                // uploadTask.on('state_changed', 
+                //     (snapshot) => {
+                //         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                //         console.log('Upload is ' + progress + '% done');
+                //     }, 
+                //     (error) => {
+                //         console.log("Upload error");
+                //     }, 
+                //     () => {
+                //         console.log("uplaoded image");
+                //         getDownloadURL(ref(storage, imageName))
+                //             .then((url) => {
+                //                 newContact['image'] = url;
+                //                 console.log(newContact);
+                //                 const c = db.collection("contacts").doc(newContact['id']);
+
+                //                 c.update({
+                //                     name: newContact['name'],
+                //                     image: newContact['image'],
+                //                     date: newContact['date']
+                //                 })
+                //             })
+                //     }
+                // );
             } else {
-                this.$emit('update-contact', newContact)
+                const c = db.collection("contacts").doc(newContact['id']);
+                c.update({
+                    name: newContact['name'],
+                    date: newContact['date']
+                }) 
             }
+
+            document.querySelector('#fileName-viewContact').textContent = "";
+
         }
     }
 }
 
 
 </script>
+
+<style>
+.file-name {
+  position: absolute;
+  bottom: -25px;
+  left: 10px;
+  font-size: 0.85rem;
+  color: #555;
+}
+</style>
